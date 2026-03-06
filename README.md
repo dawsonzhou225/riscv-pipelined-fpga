@@ -12,6 +12,7 @@ The processor is based on the pipelined RISC-V design from Harris & Harris' *Dig
 
 ### Program 1: Matrix Multiplication with ReLU
 
+Please click the photo below to view a short demo
 [![Matrix Multiply + ReLU Demo](https://img.youtube.com/vi/HQHVzQT_khI/0.jpg)](https://www.youtube.com/watch?v=HQHVzQT_khI)
 
 Compute C = A * B, then apply ReLU(x) = max(0, x) element-wise, running entirely in software on RV32I with no hardware multiply.
@@ -20,6 +21,7 @@ Matrix A contains signed values, matrix B contains unsigned values. Since RV32I 
 
 ### Program 2: Pochmann Rubik's Cube Solver
 
+Please click the photo below to view a short demo
 [![Rubik's Cube Solver Demo](https://img.youtube.com/vi/nk5WLuhXurw/0.jpg)](https://www.youtube.com/watch?v=nk5WLuhXurw)
 
 The same Old Pochmann blindfolded solving algorithm from the [breadboard project](https://github.com/dawsonzhou225/breadboard-cube-solver), ported to RISC-V assembly. Unlike the breadboard version, self-modifying code isn't needed here. The RISC-V processor has separate instruction and data memories, so the program can't overwrite itself even if it wanted to. Instead of pulling values directly from memory addresses, we load them into registers and use register-based addressing to traverse the permutation. Although much faster and more efficient than my breadboard computer, I believe it's important to note that it still an impeffect solution and shares the same practical limitations.
