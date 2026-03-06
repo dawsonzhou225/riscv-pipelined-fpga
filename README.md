@@ -1,6 +1,6 @@
 # Pipelined RISC-V Processor on FPGA
 
-![Harris & Harris Pipelined Processor Diagram](media/Pipelined-Proccesor.jpg)
+![Harris & Harris Pipelined Processor Diagram](Media/Pipelined-Proccesor.jpg)
 
 ### Project Goal
 
