@@ -1,0 +1,136 @@
+Rubik's Cube Solver on RISC-V Pipelined Processor
+
+Store corner permutation table at addresses 0–23
+00100293 // addi x5, x0, 1
+00500023 // sb x5, 0(x0)
+01700293 // addi x5, x0, 23
+005000A3 // sb x5, 1(x0)
+00600293 // addi x5, x0, 6
+00500123 // sb x5, 2(x0)
+00C00293 // addi x5, x0, 12
+005001A3 // sb x5, 3(x0)
+01000293 // addi x5, x0, 16
+00500223 // sb x5, 4(x0)
+00200293 // addi x5, x0, 2
+005002A3 // sb x5, 5(x0)
+00A00293 // addi x5, x0, 10
+00500323 // sb x5, 6(x0)
+00300293 // addi x5, x0, 3
+005003A3 // sb x5, 7(x0)
+00900293 // addi x5, x0, 9
+00500423 // sb x5, 8(x0)
+01400293 // addi x5, x0, 20
+005004A3 // sb x5, 9(x0)
+01300293 // addi x5, x0, 19
+00500523 // sb x5, 10(x0)
+00F00293 // addi x5, x0, 15
+005005A3 // sb x5, 11(x0)
+00B00293 // addi x5, x0, 11
+00500623 // sb x5, 12(x0)
+00700293 // addi x5, x0, 7
+005006A3 // sb x5, 13(x0)
+00000723 // sb x0, 14(x0)
+01600293 // addi x5, x0, 22
+005007A3 // sb x5, 15(x0)
+01200293 // addi x5, x0, 18
+00500823 // sb x5, 16(x0)
+00D00293 // addi x5, x0, 13
+005008A3 // sb x5, 17(x0)
+00500293 // addi x5, x0, 5
+00500923 // sb x5, 18(x0)
+00400293 // addi x5, x0, 4
+005009A3 // sb x5, 19(x0)
+01500293 // addi x5, x0, 21
+00500A23 // sb x5, 20(x0)
+00E00293 // addi x5, x0, 14
+00500AA3 // sb x5, 21(x0)
+01100293 // addi x5, x0, 17
+00500B23 // sb x5, 22(x0)
+00800293 // addi x5, x0, 8
+00500BA3 // sb x5, 23(x0)
+
+Store edge permutation table at addresses 24–47
+02E00293 // addi x5, x0, 46
+00500C23 // sb x5, 24(x0)
+02200293 // addi x5, x0, 34
+00500CA3 // sb x5, 25(x0)
+01A00293 // addi x5, x0, 26
+00500D23 // sb x5, 26(x0)
+01800293 // addi x5, x0, 24
+00500DA3 // sb x5, 27(x0)
+02600293 // addi x5, x0, 38
+00500E23 // sb x5, 28(x0)
+02C00293 // addi x5, x0, 44
+00500EA3 // sb x5, 29(x0)
+01900293 // addi x5, x0, 25
+00500F23 // sb x5, 30(x0)
+01F00293 // addi x5, x0, 31
+00500FA3 // sb x5, 31(x0)
+01B00293 // addi x5, x0, 27
+02500023 // sb x5, 32(x0)
+02100293 // addi x5, x0, 33
+025000A3 // sb x5, 33(x0)
+02000293 // addi x5, x0, 32
+02500123 // sb x5, 34(x0)
+01C00293 // addi x5, x0, 28
+025001A3 // sb x5, 35(x0)
+02900293 // addi x5, x0, 41
+02500223 // sb x5, 36(x0)
+02A00293 // addi x5, x0, 42
+025002A3 // sb x5, 37(x0)
+02B00293 // addi x5, x0, 43
+02500323 // sb x5, 38(x0)
+01D00293 // addi x5, x0, 29
+025003A3 // sb x5, 39(x0)
+02300293 // addi x5, x0, 35
+02500423 // sb x5, 40(x0)
+02800293 // addi x5, x0, 40
+025004A3 // sb x5, 41(x0)
+02D00293 // addi x5, x0, 45
+02500523 // sb x5, 42(x0)
+02700293 // addi x5, x0, 39
+025005A3 // sb x5, 43(x0)
+02400293 // addi x5, x0, 36
+02500623 // sb x5, 44(x0)
+01E00293 // addi x5, x0, 30
+025006A3 // sb x5, 45(x0)
+02500293 // addi x5, x0, 37
+02500723 // sb x5, 46(x0)
+02F00293 // addi x5, x0, 47
+025007A3 // sb x5, 47(x0)
+
+Setup: edge base address, swap counter, lookup offset, output pointer
+01800193 // addi x3, x0, 24
+00000213 // addi x4, x0, 0
+03000393 // addi x7, x0, 48
+04000413 // addi x8, x0, 64
+
+Corner solving loop: follow permutation cycle from buffer position
+00004083 // lbu x1, 0(x0)
+00008E63 // beq x1, x0, 28
+007082B3 // add x5, x1, x7
+00542023 // sw x5, 0(x8)
+00440413 // addi x8, x8, 4
+00120213 // addi x4, x4, 1
+0000C083 // lbu x1, 0(x1)
+FE9FF06F // jal x0, -24
+
+Parity check: output separator if odd number of corner swaps
+00127293 // andi x5, x4, 1
+00028863 // beq x5, x0, 16
+0C800293 // addi x5, x0, 200
+00542023 // sw x5, 0(x8)
+00440413 // addi x8, x8, 4
+
+Edge solving loop: follow permutation cycle from edge buffer position
+03600393 // addi x7, x0, 54
+0001C083 // lbu x1, 0(x3)
+00308C63 // beq x1, x3, 24
+007082B3 // add x5, x1, x7
+00542023 // sw x5, 0(x8)
+00440413 // addi x8, x8, 4
+0000C083 // lbu x1, 0(x1)
+FEDFF06F // jal x0, -20
+
+Halt
+0000006F // jal x0, 0

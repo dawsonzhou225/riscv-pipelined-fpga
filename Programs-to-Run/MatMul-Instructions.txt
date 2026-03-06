@@ -1,0 +1,112 @@
+4x4 Matrix Multiplication with ReLU on RISC-V Pipelined Processor
+
+Store Matrix A (signed bytes) at addresses 0–15
+00200293 // addi x5, x0, 2
+00500023 // sb x5, 0(x0)
+FFF00293 // addi x5, x0, -1
+005000A3 // sb x5, 1(x0)
+00300293 // addi x5, x0, 3
+00500123 // sb x5, 2(x0)
+000001A3 // sb x0, 3(x0)
+FFF00293 // addi x5, x0, -1
+00500223 // sb x5, 4(x0)
+000002A3 // sb x0, 5(x0)
+00200293 // addi x5, x0, 2
+00500323 // sb x5, 6(x0)
+FFE00293 // addi x5, x0, -2
+005003A3 // sb x5, 7(x0)
+00000423 // sb x0, 8(x0)
+00300293 // addi x5, x0, 3
+005004A3 // sb x5, 9(x0)
+FFF00293 // addi x5, x0, -1
+00500523 // sb x5, 10(x0)
+00200293 // addi x5, x0, 2
+005005A3 // sb x5, 11(x0)
+00100293 // addi x5, x0, 1
+00500623 // sb x5, 12(x0)
+FFE00293 // addi x5, x0, -2
+005006A3 // sb x5, 13(x0)
+00000723 // sb x0, 14(x0)
+00100293 // addi x5, x0, 1
+005007A3 // sb x5, 15(x0)
+
+Store Matrix B (unsigned bytes) at addresses 16–31
+00100293 // addi x5, x0, 1
+00500823 // sb x5, 16(x0)
+000008A3 // sb x0, 17(x0)
+00100293 // addi x5, x0, 1
+00500923 // sb x5, 18(x0)
+00200293 // addi x5, x0, 2
+005009A3 // sb x5, 19(x0)
+00200293 // addi x5, x0, 2
+00500A23 // sb x5, 20(x0)
+00100293 // addi x5, x0, 1
+00500AA3 // sb x5, 21(x0)
+00000B23 // sb x0, 22(x0)
+00300293 // addi x5, x0, 3
+00500BA3 // sb x5, 23(x0)
+00000C23 // sb x0, 24(x0)
+00300293 // addi x5, x0, 3
+00500CA3 // sb x5, 25(x0)
+00100293 // addi x5, x0, 1
+00500D23 // sb x5, 26(x0)
+00000DA3 // sb x0, 27(x0)
+00100293 // addi x5, x0, 1
+00500E23 // sb x5, 28(x0)
+00000EA3 // sb x0, 29(x0)
+00200293 // addi x5, x0, 2
+00500F23 // sb x5, 30(x0)
+00100293 // addi x5, x0, 1
+00500FA3 // sb x5, 31(x0)
+
+Setup: output pointer and loop bounds
+04000413 // addi x8, x0, 64
+00400593 // addi x11, x0, 4
+00000093 // addi x1, x0, 0
+
+Outer loops: i (rows) and j (columns)
+00000113 // addi x2, x0, 0
+00000213 // addi x4, x0, 0
+00000193 // addi x3, x0, 0
+
+Inner loop: load A[i][k] and B[k][j]
+00209293 // slli x5, x1, 2
+003282B3 // add x5, x5, x3
+00028383 // lb x7, 0(x5)
+00219313 // slli x6, x3, 2
+00230333 // add x6, x6, x2
+01034483 // lbu x9, 16(x6)
+
+Software multiply: shift-and-add (acc += A[i][k] * B[k][j])
+00048E63 // beq x9, x0, 28
+0014F293 // andi x5, x9, 1
+00028463 // beq x5, x0, 8
+00720233 // add x4, x4, x7
+00139393 // slli x7, x7, 1
+0014D493 // srli x9, x9, 1
+FE9FF06F // jal x0, -24
+
+k loop control
+00118193 // addi x3, x3, 1
+00B18463 // beq x3, x11, 8
+FC5FF06F // jal x0, -60
+
+ReLU: threshold negative results to zero
+000222B3 // slt x5, x4, x0
+00028463 // beq x5, x0, 8
+00000213 // addi x4, x0, 0
+
+Store result and advance output pointer
+00442023 // sw x4, 0(x8)
+00440413 // addi x8, x8, 4
+
+j and i loop control
+00110113 // addi x2, x2, 1
+00B10463 // beq x2, x11, 8
+F9DFF06F // jal x0, -100
+00108093 // addi x1, x1, 1
+00B08463 // beq x1, x11, 8
+F8DFF06F // jal x0, -116
+
+Halt
+0000006F // jal x0, 0
